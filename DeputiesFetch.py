@@ -30,3 +30,8 @@ with open('deputes_data.pkl', 'wb') as output:
   pkl.dump(deputes,output)
 with open('deputes_list.pkl', 'wb') as output:
   pkl.dump(data,output)
+
+with open('deputes_data.json', 'wb') as output:
+  json.dumps(deputes,output)
+with open('deputes_list.json', 'wb') as output:
+  json.dumps(data,output)
