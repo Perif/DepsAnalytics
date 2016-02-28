@@ -9,6 +9,7 @@ print "Download deputes en mandat"
 response = urllib2.urlopen('http://www.nosdeputes.fr/deputes/enmandat/json')
 data = json.loads(response.read())
 
+# get the list of all deputies with a current mandat
 print "Build deputes url list"
 urls = []
 ids = []
@@ -17,6 +18,7 @@ for l in data['deputes']:
   ids.append(l['depute']['id_an'])
 
 
+# download the json doc for each deputy
 print "Download Depute files:",len(urls)
 deputes = {}
 for dep in pbar(zip(urls,ids)):
@@ -26,12 +28,13 @@ for dep in pbar(zip(urls,ids)):
 
 
 print "Write to disk"
+# export to pickle
 with open('deputes_data.pkl', 'wb') as output:
   pkl.dump(deputes,output)
 with open('deputes_list.pkl', 'wb') as output:
   pkl.dump(data,output)
-
+# export to json
 with open('deputes_data.json', 'wb') as output:
-  json.dumps(deputes,output)
+  json.dump(deputes,output)
 with open('deputes_list.json', 'wb') as output:
-  json.dumps(data,output)
+  json.dump(data,output)
