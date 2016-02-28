@@ -7,24 +7,21 @@ pbar = ProgressBar()
 
 print "Download deputes en mandat"
 response = urllib2.urlopen('http://www.nosdeputes.fr/deputes/enmandat/json')
-data = json.loads(response.read())
+deplist = json.loads(response.read())['deputes']
 
 # get the list of all deputies with a current mandat
 print "Build deputes url list"
 urls = []
-ids = []
-for l in data['deputes']:
+for l in deplist:
   urls.append(l['depute']['url_nosdeputes_api'])
-  ids.append(l['depute']['id_an'])
 
 
 # download the json doc for each deputy
 print "Download Depute files:",len(urls)
-deputes = {}
-for dep in pbar(zip(urls,ids)):
-  (url,uid) = dep
-  dep_json = json.loads(urllib2.urlopen(url).read())
-  deputes[uid] = dep_json
+deputes = []
+for url in pbar(urls):
+  dep_json = json.loads(urllib2.urlopen(url).read())['depute']
+  deputes.append(dep_json)
 
 
 print "Write to disk"
@@ -32,9 +29,9 @@ print "Write to disk"
 with open('deputes_data.pkl', 'wb') as output:
   pkl.dump(deputes,output)
 with open('deputes_list.pkl', 'wb') as output:
-  pkl.dump(data,output)
+  pkl.dump(deplist,output)
 # export to json
 with open('deputes_data.json', 'wb') as output:
   json.dump(deputes,output)
 with open('deputes_list.json', 'wb') as output:
-  json.dump(data,output)
+  json.dump(deplist,output)
