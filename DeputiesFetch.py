@@ -4,9 +4,8 @@ import os
 import sys
 import pickle as pkl
 import argparse
-from progressbar import ProgressBar
+from tqdm import tqdm
 
-pbar = ProgressBar()
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--pics', '-p',
@@ -34,23 +33,21 @@ deplist = json.loads(response.read())['deputes']
 
 # get the list of all deputies with a current mandat
 print "Build deputes url list"
-urls = []
-for l in deplist:
-  urls.append(l['depute']['url_nosdeputes_api'])
+deps = []
+for i in tqdm(range(len(deplist))):
+  deps.append(deplist[i]['depute'])
 
 if(args.json):
   # download the json doc for each deputy
-  print "Download Depute files:",len(urls)
+  print "Download Depute files:",len(deps)
   deputes = []
-  for url in pbar(urls):
-    dep_json = json.loads(urllib2.urlopen(url).read())['depute']
+  for i in tqdm(range(len(deps))):
+    dep_json = json.loads(urllib2.urlopen(deps[i]['url_nosdeputes_api']).read())['depute']
     deputes.append(dep_json)
-
 
   # create the output directory if it does not exists
   if not os.path.exists(data_directory):
       os.makedirs(data_directory)
-
 
   print "Write to disk"
   # export to pickle
@@ -72,12 +69,11 @@ if(args.pics):
 
   # now fetch the picture of each deputy, use an_id as a name
   print "Download Depute pictures"
-  for dep in pbar(list(deplist)):
-    url_name = dep['depute']['url_nosdeputes'].split('/')[-1]
-    id_an = dep['depute']['id_an']
+  for i in tqdm(range(len(deps))):
+    url_name = deps[i]['url_nosdeputes'].split('/')[-1]
+    id_an = deps[i]['id_an']
     pic_url = 'http://www.nosdeputes.fr/depute/photo/'+url_name
 
-    #print "open",pics_directory+'/'+str(id_an)+'.png'
     with open(pics_directory+'/'+str(id_an)+'.png', 'wb') as output:
       output.write(urllib2.urlopen(pic_url).read())
 
