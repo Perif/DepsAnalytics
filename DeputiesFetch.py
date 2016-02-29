@@ -16,14 +16,17 @@ parser.add_argument('--json', '-j',
                     action='store_true',
                     help='Download data')
 
+# directories where to download data
 data_directory = 'deputy_data'
 pics_directory = 'deputy_pics'
 
 # check if any argument, if so parse them
-if len(sys.argv)==1:
+try:
+  args = parser.parse_args()
+except:
     parser.print_help()
     sys.exit(1)
-args = parser.parse_args()
+
 
 print "Download deputes en mandat"
 response = urllib2.urlopen('http://www.nosdeputes.fr/deputes/enmandat/json')
